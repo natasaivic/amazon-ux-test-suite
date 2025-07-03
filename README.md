@@ -35,3 +35,72 @@ This framework follows QA best practices including:
 - Cross-browser compatibility testing
 - Comprehensive error handling and logging
 - Reusable test utilities and fixtures
+
+## Setup Instructions
+
+### Prerequisites
+- Python 3.8+
+- Git
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd amazon-ux-test-suite
+```
+
+2. Create and activate virtual environment:
+```bash
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+4. Install Playwright browsers:
+```bash
+playwright install
+```
+
+5. Configure environment variables:
+```bash
+cp .env.example .env
+# Edit .env file with your configuration
+```
+
+### Running Tests
+
+```bash
+# Run all tests
+pytest
+
+# Run specific test file
+pytest tests/test_search.py
+
+# Run tests with HTML report
+pytest --html=reports/report.html
+
+# Run tests in parallel
+pytest -n auto
+
+# Run tests in headed mode (visible browser)
+pytest --headed
+```
+
+## Project Structure
+
+```
+amazon-ux-test-suite/
+├── tests/              # Test files organized by feature
+├── pages/              # Page Object Model classes
+├── utils/              # Utility functions and helpers
+├── fixtures/           # Test fixtures and setup
+├── reports/            # Test reports and artifacts
+├── requirements.txt    # Python dependencies
+├── .env               # Environment configuration
+└── README.md          # This file
+```
