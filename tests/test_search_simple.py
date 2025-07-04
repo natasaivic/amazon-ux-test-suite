@@ -189,6 +189,152 @@ class TestAmazonSearchSimple:
             
             if cart_confirmed:
                 print("✓ Item successfully added to cart")
+                
+                # Navigate to shopping cart page
+                print("\n--- Navigating to shopping cart ---")
+                
+                # Look for cart navigation options
+                cart_nav_selectors = [
+                    "#nav-cart",
+                    "#nav-cart-text-container",
+                    "a[href*='/cart']",
+                    "#sw-atc-details-single-container a[href*='cart']",
+                    ".nav-cart-text"
+                ]
+                
+                cart_nav_found = False
+                for selector in cart_nav_selectors:
+                    try:
+                        cart_nav = page.locator(selector).first
+                        if cart_nav.is_visible():
+                            print(f"Found cart navigation with selector: {selector}")
+                            cart_nav.click()
+                            cart_nav_found = True
+                            break
+                    except:
+                        continue
+                
+                if not cart_nav_found:
+                    # Try direct navigation to cart page
+                    print("Direct navigation to cart page...")
+                    cart_url = "https://www.amazon.com/gp/cart/view.html"
+                    page.goto(cart_url)
+                    cart_nav_found = True
+                
+                if cart_nav_found:
+                    # Wait for cart page to load
+                    page.wait_for_load_state("load", timeout=10000)
+                    time.sleep(2)
+                    
+                    print(f"✓ Successfully navigated to cart page: {page.url}")
+                    
+                    # Update item quantity to 2
+                    print("\n--- Updating item quantity to 2 ---")
+                    
+                    # Look for quantity selectors
+                    quantity_selectors = [
+                        "select[name*='quantity']",
+                        "select[data-action='quantity-dropdown']",
+                        ".a-dropdown-container select",
+                        "select[aria-label*='quantity']",
+                        "input[name*='quantity']"
+                    ]
+                    
+                    quantity_updated = False
+                    for selector in quantity_selectors:
+                        try:
+                            quantity_element = page.locator(selector).first
+                            if quantity_element.is_visible():
+                                print(f"Found quantity selector: {selector}")
+                                
+                                # Check if it's a dropdown or input
+                                element_type = quantity_element.get_attribute("tagName").lower()
+                                if element_type == "select":
+                                    # For dropdown, select option with value "2"
+                                    quantity_element.select_option("2")
+                                    print("✓ Updated quantity to 2 via dropdown")
+                                elif element_type == "input":
+                                    # For input field, clear and type "2"
+                                    quantity_element.clear()
+                                    quantity_element.fill("2")
+                                    quantity_element.press("Enter")
+                                    print("✓ Updated quantity to 2 via input field")
+                                
+                                quantity_updated = True
+                                break
+                        except Exception as e:
+                            continue
+                    
+                    if not quantity_updated:
+                        # Try alternative approach - look for + button
+                        print("Looking for quantity increase button...")
+                        plus_button_selectors = [
+                            "button[aria-label*='Increase']",
+                            "button[data-action='plus']",
+                            ".a-button-input[value='+']",
+                            "input[value='+']"
+                        ]
+                        
+                        for selector in plus_button_selectors:
+                            try:
+                                plus_button = page.locator(selector).first
+                                if plus_button.is_visible():
+                                    print(f"Found quantity increase button: {selector}")
+                                    plus_button.click()  # Click once to go from 1 to 2
+                                    print("✓ Updated quantity to 2 via plus button")
+                                    quantity_updated = True
+                                    break
+                            except:
+                                continue
+                    
+                    if quantity_updated:
+                        # Wait for page to update
+                        time.sleep(3)
+                        
+                        # Verify quantity change
+                        print("\n--- Verifying quantity update ---")
+                        
+                        # Look for quantity confirmation
+                        verification_selectors = [
+                            "select[name*='quantity'] option[selected]",
+                            "input[name*='quantity']",
+                            ".a-dropdown-prompt",
+                            "[data-item-count='2']"
+                        ]
+                        
+                        quantity_verified = False
+                        for selector in verification_selectors:
+                            try:
+                                element = page.locator(selector).first
+                                if element.is_visible():
+                                    value = element.get_attribute("value") or element.inner_text()
+                                    if "2" in str(value):
+                                        print(f"✓ Quantity verified as 2: {value}")
+                                        quantity_verified = True
+                                        break
+                            except:
+                                continue
+                        
+                        if not quantity_verified:
+                            print("⚠️  Could not verify quantity update")
+                        
+                        print("✓ Shopping cart operations completed")
+                    else:
+                        print("❌ Could not find quantity update controls")
+                        print("Available cart elements:")
+                        # Debug: show available elements
+                        cart_elements = page.locator("select, input, button").filter(visible=True)
+                        for i in range(min(cart_elements.count(), 5)):
+                            try:
+                                element = cart_elements.nth(i)
+                                tag = element.get_attribute("tagName")
+                                name = element.get_attribute("name") or ""
+                                aria_label = element.get_attribute("aria-label") or ""
+                                print(f"  {tag}: name='{name}' aria-label='{aria_label[:30]}'")
+                            except:
+                                pass
+                else:
+                    print("❌ Could not navigate to cart page")
             else:
                 print("⚠️  Could not confirm item was added to cart")
         

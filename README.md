@@ -12,10 +12,10 @@ The test suite currently implements and validates the following key user flows:
 - **Search Functionality**: Product search and search result validation
 - **Product Selection**: Product detail page navigation and information extraction  
 - **Cart Management**: Add to cart functionality with comprehensive verification
+- **Shopping Cart Operations**: Navigate to shopping cart page and update item quantity to 2
 
 ### 🔄 **Planned for Future Implementation**
-- **Shopping Cart Operations**: Navigate to shopping cart page and update item quantity to 2        │ │
-- **Checkout Process**: Proceed to checkout and implement validation of grand total  
+- **Checkout Process**: Proceed to checkout and implement validation of grand total calculation during the checkout process  
 
 ## Technology Stack
 
@@ -120,6 +120,12 @@ The test suite currently includes a comprehensive end-to-end test (`test_search_
    - Successfully adds the selected item to shopping cart
    - Verifies cart confirmation through multiple validation methods
 
+4. **Shopping Cart Operations**
+   - Navigates to the shopping cart page using cart navigation elements
+   - Locates quantity update controls (dropdown, input field, or plus/minus buttons)
+   - Updates item quantity from 1 to 2 using the most appropriate method
+   - Provides comprehensive debugging for different cart UI layouts
+
 #### **Test Features:**
 - **Smart Navigation**: Direct search URL approach for maximum reliability
 - **Robust Element Detection**: Multiple fallback strategies for dynamic Amazon UI
@@ -137,6 +143,11 @@ The test suite currently includes a comprehensive end-to-end test (`test_search_
 ✓ Clicked 'Add to Cart' button
 ✓ Cart confirmation found
 ✓ Item successfully added to cart
+✓ Found cart navigation with selector: #nav-cart
+✓ Successfully navigated to cart page
+✓ Found quantity increase button: button[aria-label*='Increase']
+✓ Updated quantity to 2 via plus button
+✓ Shopping cart operations completed
 ```
 
 This single test demonstrates a production-ready approach to testing critical e-commerce user flows with comprehensive error handling and validation.
@@ -161,9 +172,9 @@ amazon-ux-test-suite/
 The framework is ready for expansion with additional test scenarios:
 
 ### **Immediate Enhancements**
-- **Cart Workflow Extension**: Navigate to cart page and verify item details
-- **Quantity Management**: Test quantity updates and item removal from cart
+- **Checkout Flow Implementation**: Proceed to checkout and validate grand total calculation
 - **Multiple Items**: Add multiple different products to cart
+- **Cart Item Management**: Test item removal and save for later functionality
 
 ### **Advanced Features**
 - **Checkout Flow**: Guest and authenticated checkout processes

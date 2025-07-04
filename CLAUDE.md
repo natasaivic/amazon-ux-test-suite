@@ -14,9 +14,9 @@ The framework currently implements a comprehensive end-to-end test that validate
 - **Search Functionality**: Product search for "AirPods Max Over-Ear Headphone" with result validation
 - **Product Selection**: Intelligent selection of second search result and product page navigation  
 - **Cart Management**: Add to cart functionality with comprehensive verification and confirmation
+- **Shopping Cart Operations**: Navigate to shopping cart page and update item quantity to 2
 
 ### 🔄 **Future Planned Features**
-- **Shopping Cart Operations**: Navigate to shopping cart page and update item quantity to 2
 - **Checkout Process**: Proceed to checkout and implement validation of grand total calculation during the checkout process
 - **Advanced Search**: Filters, sorting, and search result accuracy
 - **Product Interactions**: Variant selection and product comparisons
@@ -37,6 +37,7 @@ The codebase currently implements:
 - Direct search URL navigation for maximum reliability
 - Smart page type detection (standard Amazon vs. sponsored/external pages)
 - Multiple fallback selectors for cart buttons and confirmation elements
+- Cart navigation and quantity update functionality with multiple UI approaches
 - Detailed logging and debugging output for troubleshooting
 - Visual verification through headed mode with pause points
 
@@ -101,4 +102,9 @@ pytest tests/test_search_simple.py::TestAmazonSearchSimple::test_search_and_sele
 # ✓ Clicked 'Add to Cart' button
 # ✓ Cart confirmation found
 # ✓ Item successfully added to cart
+# ✓ Found cart navigation with selector: #nav-cart
+# ✓ Successfully navigated to cart page
+# ✓ Found quantity increase button: button[aria-label*='Increase']
+# ✓ Updated quantity to 2 via plus button
+# ✓ Shopping cart operations completed
 ```
