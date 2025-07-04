@@ -9,10 +9,12 @@ A comprehensive automated testing framework for validating critical user experie
 The test suite currently implements and validates the following key user flows:
 
 ### ✅ **Implemented**
-- **Search Functionality**: Product search and search result validation
+- **Search Functionality**: Product search and search result validation with intelligent Apple AirPods Max detection
 - **Product Selection**: Product detail page navigation and information extraction  
 - **Cart Management**: Add to cart functionality with comprehensive verification
+- **Advanced Popup Handling**: Multi-layered approach for protection plan popups (iframe, shadow DOM, forced clicks)
 - **Shopping Cart Operations**: Navigate to shopping cart page and update item quantity to 2
+- **Checkout Process**: Navigate to checkout with price validation and authentication handling
 
 ### 🔄 **Planned for Future Implementation**
 - **Checkout Process**: Proceed to checkout and implement validation of grand total calculation during the checkout process  
@@ -105,14 +107,15 @@ The test suite currently includes a comprehensive end-to-end test (`test_search_
 
 #### **Complete User Flow Test**:
 1. **Search Functionality**
-   - Searches for "AirPods Max Over-Ear Headphone" on Amazon
-   - Validates search results are displayed (typically 20+ results)
-   - Verifies search result visibility and accessibility
+   - Searches for "Apple AirPods Max" on Amazon with bot detection handling
+   - Validates search results are displayed (typically 18+ results)
+   - Intelligently selects actual Apple AirPods Max products from search results
+   - Includes CAPTCHA detection and manual intervention support
 
 2. **Product Selection**
-   - Intelligently selects the second search result
+   - Smart product matching logic to find Apple AirPods Max in search results
    - Navigates to the product detail page
-   - Extracts and displays product information
+   - Extracts and displays product information (price, title, etc.)
 
 3. **Cart Management** 
    - Detects standard Amazon product pages vs. external/sponsored pages
@@ -120,34 +123,61 @@ The test suite currently includes a comprehensive end-to-end test (`test_search_
    - Successfully adds the selected item to shopping cart
    - Verifies cart confirmation through multiple validation methods
 
-4. **Shopping Cart Operations**
+4. **Advanced Popup Handling**
+   - **Iframe Detection**: Scans all page frames for popup elements
+   - **Shadow DOM Support**: Handles popups embedded in shadow DOM
+   - **Forced Interactions**: Uses forced clicks when standard clicks fail
+   - **Multi-layered Approach**: Tries 4 different strategies for "No thanks" buttons
+   - Successfully handles protection plan and warranty popups
+
+5. **Shopping Cart Operations**
    - Navigates to the shopping cart page using cart navigation elements
    - Locates quantity update controls (dropdown, input field, or plus/minus buttons)
    - Updates item quantity from 1 to 2 using the most appropriate method
    - Provides comprehensive debugging for different cart UI layouts
 
+6. **Checkout Process**
+   - Navigates to checkout page with price extraction
+   - Handles authentication requirements and guest checkout detection
+   - Validates grand total calculation when possible
+   - Provides fallback messaging for authentication-required scenarios
+
 #### **Test Features:**
-- **Smart Navigation**: Direct search URL approach for maximum reliability
+- **Smart Navigation**: Direct search URL approach with bot detection handling
 - **Robust Element Detection**: Multiple fallback strategies for dynamic Amazon UI
+- **Advanced Popup Handling**: Iframe, shadow DOM, and forced click support
+- **Intelligent Product Selection**: Finds actual Apple products vs. generic alternatives
 - **Page Type Recognition**: Handles different Amazon page layouts
 - **Comprehensive Validation**: Verifies each step of the user journey
 - **Visual Verification**: Headed mode execution with pause points
 - **Detailed Logging**: Clear output showing progress and debugging information
+- **CAPTCHA Support**: Manual intervention prompts for CAPTCHA solving
 
 #### **Test Output Example:**
 ```
-✓ Found 22 search results
+Navigating to Amazon homepage...
+CAPTCHA detected - manual intervention required
+Navigating to: https://www.amazon.com/s?k=Apple+AirPods+Max
+Found search results with selector: [data-component-type='s-search-result']
+Found 18 search results
+Looking for Apple AirPods Max results...
+Found Apple AirPods result at index 0
 ✓ Successfully navigated to product page
 ✓ Standard Amazon product page detected
 ✓ Found 'Add to Cart' button with selector: #add-to-cart-button
 ✓ Clicked 'Add to Cart' button
-✓ Cart confirmation found
+✓ Cart confirmation found: [data-feature-name='addToCart']
 ✓ Item successfully added to cart
+Checking for iframes...
+Found 6 frames on page
+✓ Protection plan popup handled successfully
 ✓ Found cart navigation with selector: #nav-cart
 ✓ Successfully navigated to cart page
 ✓ Found quantity increase button: button[aria-label*='Increase']
 ✓ Updated quantity to 2 via plus button
 ✓ Shopping cart operations completed
+✓ Successfully navigated to checkout
+✓ Checkout process and validation completed
 ```
 
 This single test demonstrates a production-ready approach to testing critical e-commerce user flows with comprehensive error handling and validation.
