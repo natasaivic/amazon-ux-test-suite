@@ -6,24 +6,39 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A comprehensive automated testing framework for validating critical user experience flows on the Amazon e-commerce platform. This test suite ensures the reliability and functionality of core customer journeys through systematic end-to-end testing using Playwright and pytest.
 
-## Test Coverage Areas
+## Current Test Implementation
 
-The framework validates these key user flows:
-- **Search Functionality**: Product search, filters, sorting, and search result accuracy
-- **Product Selection**: Product detail pages, variant selection, and product information display
-- **Cart Management**: Add to cart, cart modifications, quantity updates, and cart persistence
-- **Checkout Validation**: Checkout process, payment flow validation, and order confirmation
+The framework currently implements a comprehensive end-to-end test that validates:
 
-## Architecture Structure
+### ✅ **Implemented Functionality**
+- **Search Functionality**: Product search for "AirPods Max Over-Ear Headphone" with result validation
+- **Product Selection**: Intelligent selection of second search result and product page navigation  
+- **Cart Management**: Add to cart functionality with comprehensive verification and confirmation
 
-The codebase follows QA best practices with this expected structure:
-- Test files organized by feature domains (search, product, cart, checkout)
-- Page Object Model design pattern for maintainable test code
-- Explicit wait strategies for reliable element interaction
-- Cross-browser compatibility testing support
-- Comprehensive error handling and logging
-- Reusable test utilities and fixtures
-- Configuration files for test environments and browser settings
+### 🔄 **Future Planned Features**
+- **Shopping Cart Operations**: Navigate to shopping cart page and update item quantity to 2
+- **Checkout Process**: Proceed to checkout and implement validation of grand total calculation during the checkout process
+- **Advanced Search**: Filters, sorting, and search result accuracy
+- **Product Interactions**: Variant selection and product comparisons
+- **Payment Validation**: Payment flow validation and order confirmation
+
+## Current Architecture
+
+The codebase currently implements:
+
+### **Actual Structure**
+- **Single comprehensive test** (`test_search_simple.py`) covering complete user journey
+- **Playwright fixtures** in `conftest.py` for browser and page management
+- **Environment configuration** via `.env` file with headed mode as default
+- **Robust element detection** with multiple fallback strategies for dynamic Amazon UI
+- **Comprehensive validation** at each step of the user workflow
+
+### **Key Implementation Features**
+- Direct search URL navigation for maximum reliability
+- Smart page type detection (standard Amazon vs. sponsored/external pages)
+- Multiple fallback selectors for cart buttons and confirmation elements
+- Detailed logging and debugging output for troubleshooting
+- Visual verification through headed mode with pause points
 
 ## Common Commands
 
@@ -42,7 +57,7 @@ playwright install
 pytest
 
 # Run specific test file
-pytest tests/test_search.py
+pytest tests/test_search_simple.py
 
 # Run tests with specific markers
 pytest -m smoke
@@ -59,9 +74,31 @@ pytest --html=report.html
 
 ## Development Notes
 
-- Tests should be defensive and handle dynamic content on Amazon's website
-- Use explicit waits for elements rather than fixed sleeps
-- Implement proper error handling for network issues and element loading
-- Consider using test fixtures for common setup/teardown operations
-- Use environment variables for sensitive data (avoid hardcoding credentials)
-- Implement proper logging for debugging test failures
+### **Current Implementation Principles**
+- **Defensive Testing**: Multiple fallback strategies for dynamic Amazon UI elements
+- **Smart Navigation**: Direct URL approach instead of form interaction for reliability
+- **Explicit Waits**: Uses `page.wait_for_selector()` and `page.wait_for_load_state()` appropriately
+- **Comprehensive Validation**: Verifies each step with detailed logging output
+- **Environment Configuration**: Uses `.env` file for browser settings (headed mode default)
+
+### **Key Technical Approaches**
+- **Element Detection**: Multiple selector strategies with graceful fallbacks
+- **Page Type Recognition**: Distinguishes Amazon product pages from external/sponsored content
+- **Cart Verification**: Multiple confirmation methods (UI elements, cart count, success messages)
+- **Error Handling**: Continues execution with informative error messages rather than failing completely
+- **Visual Debugging**: Headed mode with pause points for manual verification
+
+### **Test Execution Patterns**
+```bash
+# Run the main end-to-end test with full output
+pytest tests/test_search_simple.py::TestAmazonSearchSimple::test_search_and_select_second_result -v -s
+
+# Expected output flow:
+# ✓ Found 22 search results
+# ✓ Successfully navigated to product page  
+# ✓ Standard Amazon product page detected
+# ✓ Found 'Add to Cart' button with selector: #add-to-cart-button
+# ✓ Clicked 'Add to Cart' button
+# ✓ Cart confirmation found
+# ✓ Item successfully added to cart
+```

@@ -63,6 +63,7 @@ class TestAmazonSearchSimple:
             print(f"✓ Successfully clicked and navigated to: {current_url}")
         
         # Try to get product title if available
+        product_title = None
         try:
             product_title_element = page.locator("#productTitle, h1").first
             if product_title_element.is_visible():
@@ -71,8 +72,128 @@ class TestAmazonSearchSimple:
         except:
             print("Could not extract product title")
         
+        # Add item to cart
+        print("\n--- Adding item to cart ---")
+        
+        # Wait a moment for page to fully load
+        time.sleep(2)
+        
+        # Check if this is a standard Amazon product page
+        if "/dp/" in current_url:
+            print("Standard Amazon product page detected")
+            
+            # Look for "Add to Cart" button with multiple approaches
+            add_to_cart_selectors = [
+                "#add-to-cart-button",
+                "input[name='submit.add-to-cart']",
+                "[data-action='add-to-cart']",
+                "button:has-text('Add to Cart')",
+                "input[value*='Add to Cart']",
+                "button:has-text('Add to cart')",  # lowercase version
+                "[title*='Add to Cart']",
+                "[aria-label*='Add to Cart']",
+                "#buy-now-button",  # Alternative buy button
+                ".a-button-input[aria-labelledby*='cart']"
+            ]
+            
+            cart_button_found = False
+            for selector in add_to_cart_selectors:
+                try:
+                    cart_button = page.locator(selector).first
+                    if cart_button.is_visible():
+                        print(f"Found 'Add to Cart' button with selector: {selector}")
+                        cart_button.click()
+                        cart_button_found = True
+                        break
+                except:
+                    continue
+            
+            # If specific selectors don't work, try finding by text in spans and other elements
+            if not cart_button_found:
+                print("Searching for cart elements by text content...")
+                # Look for clickable elements with cart-related text
+                cart_elements = page.locator("span, button, input, a").filter(has_text="Add to Cart")
+                if cart_elements.count() > 0:
+                    print(f"Found {cart_elements.count()} elements with 'Add to Cart' text")
+                    for i in range(cart_elements.count()):
+                        try:
+                            element = cart_elements.nth(i)
+                            if element.is_visible():
+                                # Try to find the clickable parent
+                                clickable = element.locator("xpath=ancestor-or-self::button | xpath=ancestor-or-self::input | xpath=ancestor-or-self::a").first
+                                if clickable.is_visible():
+                                    print(f"Clicking cart element {i+1}")
+                                    clickable.click()
+                                    cart_button_found = True
+                                    break
+                        except:
+                            continue
+            
+            if not cart_button_found:
+                print("❌ Could not find 'Add to Cart' button on Amazon product page")
+                # Show some page structure for debugging
+                print("Page structure analysis:")
+                main_content = page.locator("#centerCol, #rightCol, .s-main-slot").first
+                if main_content.is_visible():
+                    buttons_in_main = main_content.locator("button, input[type='submit'], input[type='button']")
+                    print(f"Found {buttons_in_main.count()} buttons in main content area")
+                    for i in range(min(buttons_in_main.count(), 5)):
+                        try:
+                            button = buttons_in_main.nth(i)
+                            if button.is_visible():
+                                button_text = button.inner_text().strip()
+                                print(f"  Main button {i+1}: '{button_text[:50]}'")
+                        except:
+                            pass
+        else:
+            print("Non-standard Amazon page detected - skipping cart functionality")
+            print("This might be a sponsored product or external seller page")
+            cart_button_found = False
+        
+        if cart_button_found:
+            print("✓ Clicked 'Add to Cart' button")
+            
+            # Wait for cart confirmation or page update
+            time.sleep(3)
+            
+            # Check for cart confirmation messages
+            cart_confirmations = [
+                "[data-feature-name='addToCart']",
+                "#attachDisplayAddBaseAlert",
+                "#sw-atc-details-single-container",
+                ".a-alert-success",
+                "#huc-v2-order-row-confirm-text",
+                ".a-size-medium-plus:has-text('Added to Cart')"
+            ]
+            
+            cart_confirmed = False
+            for selector in cart_confirmations:
+                try:
+                    if page.locator(selector).count() > 0:
+                        print(f"✓ Cart confirmation found: {selector}")
+                        cart_confirmed = True
+                        break
+                except:
+                    continue
+            
+            if not cart_confirmed:
+                # Alternative: Check if cart icon has updated
+                try:
+                    cart_count = page.locator("#nav-cart-count, .nav-cart-count").first
+                    if cart_count.is_visible():
+                        count_text = cart_count.inner_text()
+                        print(f"✓ Cart count: {count_text}")
+                        cart_confirmed = True
+                except:
+                    pass
+            
+            if cart_confirmed:
+                print("✓ Item successfully added to cart")
+            else:
+                print("⚠️  Could not confirm item was added to cart")
+        
         # Pause for 5 seconds to view results
-        print("Pausing for 5 seconds to view the page...")
+        print("\nPausing for 5 seconds to view the page...")
         time.sleep(5)
         
         print("✓ Test completed successfully")

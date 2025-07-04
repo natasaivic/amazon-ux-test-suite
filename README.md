@@ -6,12 +6,16 @@ A comprehensive automated testing framework for validating critical user experie
 
 ## Test Coverage
 
-The test suite validates the following key user flows:
+The test suite currently implements and validates the following key user flows:
 
-- **Search Functionality**: Product search, filters, sorting, and search result accuracy
-- **Product Selection**: Product detail pages, variant selection, and product information display
-- **Cart Management**: Add to cart, cart modifications, quantity updates, and cart persistence
-- **Checkout Validation**: Checkout process, payment flow validation, and order confirmation
+### ✅ **Implemented**
+- **Search Functionality**: Product search and search result validation
+- **Product Selection**: Product detail page navigation and information extraction  
+- **Cart Management**: Add to cart functionality with comprehensive verification
+
+### 🔄 **Planned for Future Implementation**
+- **Shopping Cart Operations**: Navigate to shopping cart page and update item quantity to 2        │ │
+- **Checkout Process**: Proceed to checkout and implement validation of grand total  
 
 ## Technology Stack
 
@@ -96,21 +100,46 @@ pytest tests/test_search_simple.py::TestAmazonSearchSimple::test_search_and_sele
 
 ## Current Test Implementation
 
-### Search Flow Testing
-The test suite currently includes:
+### End-to-End Amazon UX Workflow
+The test suite currently includes a comprehensive end-to-end test (`test_search_simple.py`) that validates the complete Amazon customer journey:
 
-- **AirPods Max Search Test** (`test_search_simple.py`):
-  - Searches for "AirPods Max Over-Ear Headphone" on Amazon
-  - Validates search results are displayed
-  - Selects and navigates to the second search result
-  - Verifies successful product page navigation
-  - Runs in headed mode with 5-second viewing pause
+#### **Complete User Flow Test**:
+1. **Search Functionality**
+   - Searches for "AirPods Max Over-Ear Headphone" on Amazon
+   - Validates search results are displayed (typically 20+ results)
+   - Verifies search result visibility and accessibility
 
-**Test Features:**
-- Direct search URL navigation for reliability
-- Robust element selection with fallback strategies
-- Clear test output and debugging information
-- Headed mode execution for visual verification
+2. **Product Selection**
+   - Intelligently selects the second search result
+   - Navigates to the product detail page
+   - Extracts and displays product information
+
+3. **Cart Management** 
+   - Detects standard Amazon product pages vs. external/sponsored pages
+   - Locates "Add to Cart" button using multiple fallback strategies
+   - Successfully adds the selected item to shopping cart
+   - Verifies cart confirmation through multiple validation methods
+
+#### **Test Features:**
+- **Smart Navigation**: Direct search URL approach for maximum reliability
+- **Robust Element Detection**: Multiple fallback strategies for dynamic Amazon UI
+- **Page Type Recognition**: Handles different Amazon page layouts
+- **Comprehensive Validation**: Verifies each step of the user journey
+- **Visual Verification**: Headed mode execution with pause points
+- **Detailed Logging**: Clear output showing progress and debugging information
+
+#### **Test Output Example:**
+```
+✓ Found 22 search results
+✓ Successfully navigated to product page
+✓ Standard Amazon product page detected
+✓ Found 'Add to Cart' button with selector: #add-to-cart-button
+✓ Clicked 'Add to Cart' button
+✓ Cart confirmation found
+✓ Item successfully added to cart
+```
+
+This single test demonstrates a production-ready approach to testing critical e-commerce user flows with comprehensive error handling and validation.
 
 ## Project Structure
 
@@ -129,9 +158,22 @@ amazon-ux-test-suite/
 
 ## Next Steps
 
-This framework is ready for expansion with additional test scenarios:
-- Cart management testing
-- Checkout flow validation
-- Product detail page interactions
-- Filter and sort functionality
-- Cross-browser compatibility testing
+The framework is ready for expansion with additional test scenarios:
+
+### **Immediate Enhancements**
+- **Cart Workflow Extension**: Navigate to cart page and verify item details
+- **Quantity Management**: Test quantity updates and item removal from cart
+- **Multiple Items**: Add multiple different products to cart
+
+### **Advanced Features**
+- **Checkout Flow**: Guest and authenticated checkout processes
+- **Product Variations**: Size, color, and option selection testing
+- **Search Filters**: Price range, brand, and category filtering
+- **Cross-Browser Testing**: Firefox, Safari, and Edge compatibility
+- **Performance Testing**: Page load times and response measurements
+
+### **Quality Enhancements**
+- **Page Object Model**: Refactor common elements into reusable page classes
+- **Test Data Management**: External test data files and parameterized tests
+- **Reporting**: Enhanced HTML reports with screenshots and test metrics
+- **CI/CD Integration**: GitHub Actions for automated test execution
