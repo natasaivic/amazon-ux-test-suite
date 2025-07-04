@@ -182,6 +182,42 @@ Found 6 frames on page
 
 This single test demonstrates a production-ready approach to testing critical e-commerce user flows with comprehensive error handling and validation.
 
+## CI/CD Challenges & Solutions
+
+### Challenge: Amazon Bot Detection in CI
+- **Issue**: Amazon's sophisticated bot detection systems identify GitHub Actions as automated traffic, blocking test execution in CI environments
+- **Learning**: Major e-commerce platforms implement advanced anti-automation measures that differentiate between local development and CI/CD environments
+- **Technical Reality**: IP reputation, browser fingerprinting, and traffic patterns trigger Amazon's security systems in cloud CI environments
+
+### Solution: Hybrid Testing Strategy
+Our approach demonstrates real-world testing architecture:
+
+#### **Local Development Environment** ✅
+- **Full End-to-End Testing**: Complete Amazon UX workflow execution
+- **Advanced Bot Evasion**: CAPTCHA handling, homepage navigation, intelligent delays
+- **Comprehensive Coverage**: Search, product selection, cart management, checkout validation
+- **Visual Debugging**: Headed mode with manual intervention capabilities
+
+#### **CI/CD Infrastructure** ✅
+- **GitHub Actions Workflow**: Fully configured automated testing pipeline
+- **Modern DevOps Practices**: Artifact generation, test reporting, dependency caching
+- **Production-Ready Setup**: Demonstrates understanding of CI/CD principles and implementation
+
+### Technical Achievement
+This project showcases the ability to:
+- Build robust automation frameworks that work in restrictive environments
+- Implement multi-layered bot detection evasion strategies
+- Handle real-world e-commerce testing challenges
+- Design CI/CD pipelines with appropriate environmental considerations
+- Document and communicate technical limitations professionally
+
+### Industry Relevance
+This challenge reflects common scenarios in professional QA environments where:
+- Production sites have anti-automation protections
+- Different testing strategies are required for different environments
+- Technical constraints must be balanced with testing objectives
+- Real-world problem-solving skills are more valuable than perfect automation
+
 ## Project Structure
 
 ```
