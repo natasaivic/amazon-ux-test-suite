@@ -1,0 +1,101 @@
+name: Amazon UX Test Suite
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        browser: [chromium]
+        python-version: [3.11]
+      fail-fast: false
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Install Playwright browsers
+      run: |
+        playwright install --with-deps ${{ matrix.browser }}
+        
+    - name: Create test artifacts directory
+      run: mkdir -p test-results
+      
+    - name: Run Amazon UX Tests
+      env:
+        BROWSER: ${{ matrix.browser }}
+        HEADLESS: true
+        VIEWPORT_WIDTH: 1920
+        VIEWPORT_HEIGHT: 1080
+        GENERATE_SCREENSHOTS: true
+        GENERATE_VIDEOS: false
+        GENERATE_TRACES: true
+      run: |
+        pytest tests/ \
+          --verbose \
+          --tb=short \
+          --html=test-results/report-${{ matrix.browser }}-py${{ matrix.python-version }}.html \
+          --self-contained-html \
+          --junit-xml=test-results/junit-${{ matrix.browser }}-py${{ matrix.python-version }}.xml \
+          --capture=no
+          
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()  # Upload even if tests fail
+      with:
+        name: test-results-${{ matrix.browser }}-py${{ matrix.python-version }}
+        path: |
+          test-results/
+          *.png
+          *.html
+        retention-days: 30
+        
+    - name: Upload test reports to GitHub Pages
+      if: github.ref == 'refs/heads/main' && matrix.browser == 'chromium' && matrix.python-version == '3.11'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: test-results
+        destination_dir: latest-test-results
+        
+  notify:
+    needs: test
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: Check test results and notify
+      run: |
+        if [ "${{ needs.test.result }}" == "failure" ]; then
+          echo "❌ Amazon UX Test Suite failed!"
+          echo "Check the workflow logs for details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        elif [ "${{ needs.test.result }}" == "success" ]; then
+          echo "✅ Amazon UX Test Suite passed successfully!"
+        else
+          echo "⚠️ Amazon UX Test Suite completed with warnings"
+        fi
+        
