@@ -26,7 +26,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
         
     - name: Cache pip dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -64,7 +64,7 @@ jobs:
           --capture=no
           
     - name: Upload test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()  # Upload even if tests fail
       with:
         name: test-results-${{ matrix.browser }}-py${{ matrix.python-version }}
@@ -76,7 +76,7 @@ jobs:
         
     - name: Upload test reports to GitHub Pages
       if: github.ref == 'refs/heads/main' && matrix.browser == 'chromium' && matrix.python-version == '3.11'
-      uses: peaceiris/actions-gh-pages@v3
+      uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: test-results
